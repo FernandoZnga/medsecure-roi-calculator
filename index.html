@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora ROI - Ciberseguridad Hospitalaria</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .results {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .results h2 {
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8em;
+        }
+
+        .result-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .result-card h3 {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .result-card .subvalue {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #0c5460;
+        }
+
+        .positive {
+            color: #28a745;
+        }
+
+        .negative {
+            color: #dc3545;
+        }
+
+        .recommendation {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .recommendation h3 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            .result-card .value {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Calculadora ROI - Ciberseguridad Hospitalaria</h1>
+            <p>Análisis de Retorno de Inversión en Protección Contra Ciberataques</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Hospital de Renombre - Honduras, Centro América</p>
+        </header>
+
+        <div class="content">
+            <div class="info-box">
+                <strong>📊 Contexto:</strong> Esta calculadora te ayuda a evaluar el retorno de inversión en tecnología de ciberseguridad versus el costo potencial de un ciberataque ransomware a un hospital. Los valores están basados en <strong>casos reales documentados</strong>.
+            </div>
+
+            <!-- Casos Reales -->
+            <div class="section">
+                <h2>📋 Casos Reales Documentados</h2>
+                <div class="warning">
+                    <strong>⚠️ Nota:</strong> El ROI puede parecer alto, pero está fundamentado en casos reales de hospitales atacados.
+                </div>
+                <div class="grid">
+                    <div class="info-box" style="margin: 0; background: #fff; border-left: 4px solid #28a745;">
+                        <strong>🏥 Universal Health Services (2020)</strong><br>
+                        <small>400+ hospitales, USA</small><br>
+                        <strong>Costo:</strong> $67 millones USD<br>
+                        <strong>Duración:</strong> 3 semanas
+                    </div>
+                    <div class="info-box" style="margin: 0; background: #fff; border-left: 4px solid #dc3545;">
+                        <strong>🏥 Scripps Health (2021)</strong><br>
+                        <small>5 hospitales, California</small><br>
+                        <strong>Costo:</strong> $112.7 millones USD<br>
+                        <strong>Duración:</strong> 33 días
+                    </div>
+                    <div class="info-box" style="margin: 0; background: #fff; border-left: 4px solid #ffc107;">
+                        <strong>🏥 Hospital Clínic Barcelona (2023)</strong><br>
+                        <small>800 camas, España</small><br>
+                        <strong>Costo:</strong> €5-8 millones<br>
+                        <strong>Impacto:</strong> 3,000 citas canceladas
+                    </div>
+                    <div class="info-box" style="margin: 0; background: #fff; border-left: 4px solid #6f42c1;">
+                        <strong>⚠️ Düsseldorf University (2020)</strong><br>
+                        <small>Alemania</small><br>
+                        <strong>Consecuencia:</strong> Primera muerte por ransomware<br>
+                        <strong>Causa:</strong> Paciente redirigida, murió en traslado
+                    </div>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <a href="justificacion-roi.md" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 600;">📖 Ver justificación completa del ROI con fuentes »</a>
+                </div>
+            </div>
+
+            <!-- Escenarios Preconfigurados -->
+            <div class="section">
+                <h2>⚙️ Escenarios de Análisis</h2>
+                <div class="info-box">
+                    <strong>💡 Sugerencia:</strong> Si el ROI parece muy alto, prueba los escenarios conservadores para validar los resultados.
+                </div>
+                <div class="grid">
+                    <button class="btn" onclick="loadScenario('realistic')" style="margin: 5px; background: linear-gradient(135deg, #28a745, #20c997);">📊 Realista (Valores por Defecto)</button>
+                    <button class="btn" onclick="loadScenario('conservative')" style="margin: 5px; background: linear-gradient(135deg, #ffc107, #fd7e14);">🔒 Conservador</button>
+                    <button class="btn" onclick="loadScenario('optimistic')" style="margin: 5px; background: linear-gradient(135deg, #dc3545, #e83e8c);">📈 Pesimista (Mayor Riesgo)</button>
+                </div>
+            </div>
+
+            <!-- Características del Hospital -->
+            <div class="section">
+                <h2>🏥 Características del Hospital</h2>
+                <div class="grid">
+                    <div class="input-group">
+                        <label for="beds">Número de Camas</label>
+                        <input type="number" id="beds" value="300" min="50" max="2000">
+                        <small>Capacidad hospitalaria</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="dailyRevenue">Ingresos Diarios (USD)</label>
+                        <input type="number" id="dailyRevenue" value="150000" step="1000">
+                        <small>Ingresos promedio operacionales por día</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="surgeries">Cirugías Mensuales</label>
+                        <input type="number" id="surgeries" value="500" min="10">
+                        <small>Procedimientos quirúrgicos por mes</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="patientRecords">Registros de Pacientes</label>
+                        <input type="number" id="patientRecords" value="100000" step="1000">
+                        <small>Total de historiales médicos en sistema</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Escenario de Ataque -->
+            <div class="section">
+                <h2>⚠️ Escenario de Ciberataque (Ransomware)</h2>
+                <div class="warning">
+                    <strong>⚠️ Advertencia:</strong> Los ataques de ransomware a hospitales pueden paralizar operaciones críticas, poniendo vidas en riesgo.
+                </div>
+                <div class="grid">
+                    <div class="input-group">
+                        <label for="downtimeDays">Días de Paralización</label>
+                        <input type="number" id="downtimeDays" value="21" min="1" max="90">
+                        <small>Promedio: 15-30 días según estudios recientes</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="ransomAmount">Monto de Rescate (USD)</label>
+                        <input type="number" id="ransomAmount" value="5000000" step="100000">
+                        <small>Rescates típicos: $3M - $10M para hospitales grandes</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="recoveryPercent">% de Operación durante Crisis</label>
+                        <input type="number" id="recoveryPercent" value="30" min="0" max="100">
+                        <small>Capacidad operativa en modo manual/emergencia</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="dataLossPercent">% de Datos Irrecuperables</label>
+                        <input type="number" id="dataLossPercent" value="15" min="0" max="100">
+                        <small>Datos perdidos permanentemente</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Costos Adicionales -->
+            <div class="section">
+                <h2>💰 Costos Adicionales del Ataque</h2>
+                <div class="grid">
+                    <div class="input-group">
+                        <label for="itRecovery">Recuperación de Sistemas IT (USD)</label>
+                        <input type="number" id="itRecovery" value="2000000" step="50000">
+                        <small>Consultores, reconstrucción, nuevos sistemas</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="legalFines">Multas y Demandas (USD)</label>
+                        <input type="number" id="legalFines" value="1500000" step="50000">
+                        <small>Multas regulatorias y compensaciones</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="reputationLoss">Pérdida Reputacional (USD)</label>
+                        <input type="number" id="reputationLoss" value="3000000" step="100000">
+                        <small>Pérdida de pacientes y confianza (1-2 años)</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="insuranceIncrease">Aumento de Seguros Anual (USD)</label>
+                        <input type="number" id="insuranceIncrease" value="500000" step="10000">
+                        <small>Incremento en primas por 3-5 años</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inversión en Ciberseguridad -->
+            <div class="section">
+                <h2>🛡️ Inversión en Ciberseguridad</h2>
+                <div class="grid">
+                    <div class="input-group">
+                        <label for="initialInvestment">Inversión Inicial en Tecnología (USD)</label>
+                        <input type="number" id="initialInvestment" value="1500000" step="50000">
+                        <small>Firewall, EDR, SIEM, SOC, capacitación, auditorías</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="annualMaintenance">Mantenimiento Anual (USD)</label>
+                        <input type="number" id="annualMaintenance" value="400000" step="10000">
+                        <small>Licencias, monitoreo, actualizaciones, personal</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="attackProbability">Probabilidad de Ataque (%)</label>
+                        <input type="number" id="attackProbability" value="75" min="0" max="100">
+                        <small>Sin protección adecuada en 5 años</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="protectionEffectiveness">Efectividad de Protección (%)</label>
+                        <input type="number" id="protectionEffectiveness" value="85" min="0" max="100">
+                        <small>Reducción de riesgo con inversión</small>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="calculateROI()">📊 Calcular ROI</button>
+
+            <!-- Resultados -->
+            <div id="results" style="display: none;">
+                <div class="results">
+                    <h2>📈 Resultados del Análisis</h2>
+                    
+                    <div class="result-card">
+                        <h3>Costo Total de un Ataque</h3>
+                        <div class="value" id="totalAttackCost">$0</div>
+                        <div class="subvalue">Impacto financiero completo</div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="result-card">
+                            <h3>Pérdida por Paralización</h3>
+                            <div class="value" id="downtimeCost">$0</div>
+                        </div>
+                        <div class="result-card">
+                            <h3>Rescate + Recuperación</h3>
+                            <div class="value" id="ransomRecovery">$0</div>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Inversión Total en Ciberseguridad (5 años)</h3>
+                        <div class="value" id="totalInvestment">$0</div>
+                        <div class="subvalue">Inversión inicial + Mantenimiento anual</div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Ahorro Esperado (5 años)</h3>
+                        <div class="value" id="expectedSavings">$0</div>
+                        <div class="subvalue">Pérdidas evitadas por protección</div>
+                    </div>
+
+                    <div class="result-card" style="background: rgba(255,255,255,0.25); border: 2px solid white;">
+                        <h3>🎯 ROI (Retorno de Inversión)</h3>
+                        <div class="value" id="roiValue">0%</div>
+                        <div class="subvalue" id="roiYears">Recuperación en X años</div>
+                    </div>
+
+                    <div class="recommendation">
+                        <h3>💡 Recomendación</h3>
+                        <p id="recommendation"></p>
+                    </div>
+
+                    <div class="recommendation" style="background: #f8f9fa; border-left: 4px solid #17a2b8;">
+                        <h3>📋 Justificación del ROI</h3>
+                        <p id="justification"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('es-HN', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function calculateROI() {
+            // Obtener valores del hospital
+            const beds = parseFloat(document.getElementById('beds').value);
+            const dailyRevenue = parseFloat(document.getElementById('dailyRevenue').value);
+            const surgeries = parseFloat(document.getElementById('surgeries').value);
+            const patientRecords = parseFloat(document.getElementById('patientRecords').value);
+
+            // Escenario de ataque
+            const downtimeDays = parseFloat(document.getElementById('downtimeDays').value);
+            const ransomAmount = parseFloat(document.getElementById('ransomAmount').value);
+            const recoveryPercent = parseFloat(document.getElementById('recoveryPercent').value) / 100;
+            const dataLossPercent = parseFloat(document.getElementById('dataLossPercent').value) / 100;
+
+            // Costos adicionales
+            const itRecovery = parseFloat(document.getElementById('itRecovery').value);
+            const legalFines = parseFloat(document.getElementById('legalFines').value);
+            const reputationLoss = parseFloat(document.getElementById('reputationLoss').value);
+            const insuranceIncrease = parseFloat(document.getElementById('insuranceIncrease').value);
+
+            // Inversión en ciberseguridad
+            const initialInvestment = parseFloat(document.getElementById('initialInvestment').value);
+            const annualMaintenance = parseFloat(document.getElementById('annualMaintenance').value);
+            const attackProbability = parseFloat(document.getElementById('attackProbability').value) / 100;
+            const protectionEffectiveness = parseFloat(document.getElementById('protectionEffectiveness').value) / 100;
+
+            // CÁLCULOS
+
+            // 1. Pérdida por paralización de operaciones
+            const downtimeCost = dailyRevenue * downtimeDays * (1 - recoveryPercent);
+
+            // 2. Costo de datos perdidos (valor por registro médico: ~$400 según estudios)
+            const dataLossCost = patientRecords * dataLossPercent * 400;
+
+            // 3. Costo total del ataque
+            const totalAttackCost = downtimeCost + ransomAmount + itRecovery + 
+                                   legalFines + reputationLoss + dataLossCost + 
+                                   (insuranceIncrease * 3); // 3 años de aumento
+
+            // 4. Inversión total en ciberseguridad (5 años)
+            const totalInvestment = initialInvestment + (annualMaintenance * 5);
+
+            // 5. Riesgo esperado sin protección (5 años)
+            const expectedLossWithoutProtection = totalAttackCost * attackProbability;
+
+            // 6. Riesgo esperado con protección (5 años)
+            const residualRisk = totalAttackCost * attackProbability * (1 - protectionEffectiveness);
+
+            // 7. Ahorro esperado
+            const expectedSavings = expectedLossWithoutProtection - residualRisk;
+
+            // 8. Beneficio neto
+            const netBenefit = expectedSavings - totalInvestment;
+
+            // 9. ROI
+            const roi = (netBenefit / totalInvestment) * 100;
+
+            // 10. Periodo de recuperación
+            const paybackYears = totalInvestment / (expectedSavings / 5);
+
+            // MOSTRAR RESULTADOS
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('totalAttackCost').textContent = formatCurrency(totalAttackCost);
+            document.getElementById('downtimeCost').textContent = formatCurrency(downtimeCost);
+            document.getElementById('ransomRecovery').textContent = formatCurrency(ransomAmount + itRecovery);
+            document.getElementById('totalInvestment').textContent = formatCurrency(totalInvestment);
+            document.getElementById('expectedSavings').textContent = formatCurrency(expectedSavings);
+            document.getElementById('roiValue').textContent = roi.toFixed(1) + '%';
+            document.getElementById('roiYears').textContent = `Recuperación en ${paybackYears.toFixed(1)} años`;
+
+            // Recomendación
+            let recommendation = '';
+            if (roi > 200) {
+                recommendation = `<strong style="color: #28a745;">✅ INVERSIÓN ALTAMENTE RECOMENDADA</strong><br><br>
+                Con un ROI de <strong>${roi.toFixed(1)}%</strong>, la inversión en ciberseguridad es extremadamente rentable. 
+                Por cada dólar invertido, se esperan ahorros de <strong>$${(roi/100 + 1).toFixed(2)}</strong>. 
+                El periodo de recuperación de solo <strong>${paybackYears.toFixed(1)} años</strong> es excelente.<br><br>
+                <strong>Acción inmediata:</strong> Implementar una estrategia de ciberseguridad robusta es crítico para proteger 
+                vidas, datos de pacientes y la continuidad operativa del hospital.`;
+            } else if (roi > 100) {
+                recommendation = `<strong style="color: #28a745;">✅ INVERSIÓN RECOMENDADA</strong><br><br>
+                Un ROI de <strong>${roi.toFixed(1)}%</strong> indica que la inversión duplicará su valor en protección. 
+                Aunque el periodo de recuperación es de <strong>${paybackYears.toFixed(1)} años</strong>, los beneficios 
+                en seguridad de pacientes y reputación son invaluables.<br><br>
+                <strong>Recomendación:</strong> Proceder con la inversión enfocándose en las áreas de mayor riesgo primero.`;
+            } else if (roi > 0) {
+                recommendation = `<strong style="color: #ffc107;">⚠️ INVERSIÓN VIABLE CON AJUSTES</strong><br><br>
+                Con un ROI de <strong>${roi.toFixed(1)}%</strong>, la inversión es positiva pero moderada. 
+                Considere optimizar la estrategia de seguridad para mejorar la relación costo-beneficio.<br><br>
+                <strong>Sugerencia:</strong> Evaluar soluciones escalonadas o enfocarse en controles de alto impacto primero.`;
+            } else {
+                recommendation = `<strong style="color: #dc3545;">❌ REVISAR ESTRATEGIA</strong><br><br>
+                El ROI actual es <strong>${roi.toFixed(1)}%</strong>, lo que sugiere que los costos superan los beneficios esperados. 
+                Sin embargo, considere que: <br><br>
+                1. Los costos de un ataque pueden ser impredecibles y mayores<br>
+                2. El valor de vidas humanas y reputación no tiene precio<br>
+                3. Puede ajustar la probabilidad de ataque o efectividad de protección<br><br>
+                <strong>Recomendación:</strong> Revisar la estrategia de inversión o ajustar parámetros más realistas.`;
+            }
+
+            document.getElementById('recommendation').innerHTML = recommendation;
+
+            // Justificación del ROI
+            let justification = '';
+            if (roi > 300) {
+                justification = `<strong>📊 Fundamentado en casos reales:</strong> Similar al caso de Scripps Health ($112.7M) y UHS ($67M). 
+                Un hospital de ${beds} camas con ingresos de ${formatCurrency(dailyRevenue)}/día enfrenta pérdidas devastadoras. 
+                <strong>Casos documentados muestran costos similares o mayores.</strong><br><br>
+                <strong>🔍 Validación:</strong> Ajusta la probabilidad de ataque a 45% y efectividad a 70% para un escenario más conservador.`;
+            } else if (roi > 150) {
+                justification = `<strong>📊 Basado en promedios de la industria:</strong> Los costos calculados están alineados con el promedio de 
+                hospitales de tamaño similar. El sector salud paga rescates promedio de $2.1M (vs $1.5M otros sectores).<br><br>
+                <strong>📈 Tendencia:</strong> Los ataques aumentan 20-30% anualmente, haciendo la inversión más valiosa con el tiempo.`;
+            } else if (roi > 50) {
+                justification = `<strong>📊 Escenario conservador:</strong> Incluso con parámetros conservadores, el ROI es positivo porque 
+                un solo ataque exitoso puede costar más que años de inversión en protección.<br><br>
+                <strong>⚖️ Riesgo vs Recompensa:</strong> La asimetría entre costo de protección vs costo de ataque favorece la inversión.`;
+            } else {
+                justification = `<strong>📊 Análisis de sensibilidad:</strong> El ROI bajo puede indicar parámetros muy conservadores o 
+                sobreestimación de costos de protección. Considere que los costos intangibles (vidas, reputación) 
+                no están completamente cuantificados.<br><br>
+                <strong>📋 Recomendación:</strong> Revise los casos reales documentados para calibrar mejor los parámetros.`;
+            }
+            document.getElementById('justification').innerHTML = justification;
+
+            // Scroll a resultados
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function loadScenario(type) {
+            if (type === 'realistic') {
+                // Valores por defecto ya cargados
+                document.getElementById('attackProbability').value = '75';
+                document.getElementById('protectionEffectiveness').value = '85';
+                document.getElementById('downtimeDays').value = '21';
+                document.getElementById('ransomAmount').value = '5000000';
+                document.getElementById('reputationLoss').value = '3000000';
+            } else if (type === 'conservative') {
+                // Escenario más conservador
+                document.getElementById('attackProbability').value = '45';
+                document.getElementById('protectionEffectiveness').value = '70';
+                document.getElementById('downtimeDays').value = '14';
+                document.getElementById('ransomAmount').value = '2500000';
+                document.getElementById('reputationLoss').value = '1500000';
+                document.getElementById('itRecovery').value = '1000000';
+                document.getElementById('legalFines').value = '750000';
+            } else if (type === 'optimistic') {
+                // Escenario pesimista (peor caso)
+                document.getElementById('attackProbability').value = '85';
+                document.getElementById('protectionEffectiveness').value = '75';
+                document.getElementById('downtimeDays').value = '35';
+                document.getElementById('ransomAmount').value = '8000000';
+                document.getElementById('reputationLoss').value = '5000000';
+                document.getElementById('itRecovery').value = '3000000';
+                document.getElementById('legalFines').value = '2500000';
+            }
+            calculateROI();
+        }
+
+        // Calcular automáticamente al cargar
+        window.addEventListener('load', function() {
+            calculateROI();
+        });
+    </script>
+</body>
+</html>
